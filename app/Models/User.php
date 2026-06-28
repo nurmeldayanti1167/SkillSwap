@@ -37,12 +37,18 @@ class User extends Authenticatable
 
     public function offeredSkills()
     {
-        return $this->belongsToMany(Skill::class, 'user_skills')->wherePivot('type', 'offer')->withPivot('proficiency_level')->withTimestamps();
+        return $this->belongsToMany(Skill::class, 'user_skills')
+            ->wherePivot('type', 'offer')
+            ->withPivot('id', 'proficiency_level')
+            ->withTimestamps();
     }
 
     public function soughtSkills()
     {
-        return $this->belongsToMany(Skill::class, 'user_skills')->wherePivot('type', 'seek')->withPivot('proficiency_level')->withTimestamps();
+        return $this->belongsToMany(Skill::class, 'user_skills')
+            ->wherePivot('type', 'seek')
+            ->withPivot('id', 'proficiency_level')
+            ->withTimestamps();
     }
 
     public function sentSwaps()

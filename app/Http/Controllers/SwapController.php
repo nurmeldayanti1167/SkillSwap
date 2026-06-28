@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Swap;
+use App\Models\User;
+use App\Models\Skill;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class SwapController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user();
+        
+        $sentSwaps = Swap::with(['receiver', 'offeredSkill', 'requestedSkill', 'reviews'])
+            ->where('sender_id', $user->id)
+            ->latest()
+            ->get();
+        
+        $receivedSwaps = Swap::with(['receiver', 'offeredSkill', 'requestedSkill', 'reviews'])
+            ->where('receiver_id', $user->id)
+            ->latest()
+            ->get();
+        
+        return view('swaps.index', compact('sentSwaps', 'receivedSwaps'));
+    }
+
+    public function create($userId)
+    {
+        $receiver = User::with(['offeredSkills', 'soughtSkills'])->findOrFail($userId);
+        $sender = Auth::user()->load(['offeredSkills', 'soughtSkills']);
+        
+        return view('swaps.create', compact('receiver', 'sender'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'receiver_id' => ['required', 'exists:users,id'],
+            'offered_skill_id' => ['required', 'exists:skills,id'],
+            'requested_skill_id' => ['required', 'exists:skills,id'],
+        ]);
+
+        $exists = Swap::where('sender_id', Auth::id())
+            ->where('receiver_id', $request->receiver_id)
+            ->where('offered_skill_id', $request->offered_skill_id)
+            ->where('requested_skill_id', $request->requested_skill_id)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Swap request sudah ada!');
+        }
+
+        Swap::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'offered_skill_id' => $request->offered_skill_id,
+            'requested_skill_id' => $request->requested_skill_id,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('swaps.index')->with('success', 'Swap request berhasil dikirim!');
+    }
+
+    public function accept($id)
+    {
+        $swap = Swap::where('id', $id)
+            ->where('receiver_id', Auth::id())
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        $swap->update([
+            'status' => 'accepted',
+            'swapped_at' => now(),
+        ]);
+
+        return back()->with('success', 'Swap request diterima!');
+    }
+
+    public function reject($id)
+    {
+        $swap = Swap::where('id', $id)
+            ->where('receiver_id', Auth::id())
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        $swap->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Swap request ditolak!');
+    }
+}
