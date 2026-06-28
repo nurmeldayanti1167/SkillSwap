@@ -15,12 +15,6 @@
                 </div>
                 <nav class="flex items-center space-x-4">
                     <a href="{{ route('dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Dashboard</a>
-                    @auth
-                        <a href="{{ route('logout') }}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Logout</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">Login</a>
-                        <a href="{{ route('register') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</a>
-                    @endauth
                 </nav>
             </div>
         </div>
@@ -93,7 +87,7 @@
                         @endif
 
                         <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Ajukan Swap</a>
+                            <a href="{{ route('users.show', $user->id) }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Lihat Profil</a>
                         </div>
                     </div>
                 @endforeach
