@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Swap;
 use App\Models\User;
 use App\Models\Skill;
+use App\Notifications\SwapRequestNotification;
+use App\Notifications\SwapAcceptedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,13 +56,16 @@ class SwapController extends Controller
             return back()->with('error', 'Swap request sudah ada!');
         }
 
-        Swap::create([
+        $swap = Swap::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
             'offered_skill_id' => $request->offered_skill_id,
             'requested_skill_id' => $request->requested_skill_id,
             'status' => 'pending',
         ]);
+
+        $receiver = User::find($request->receiver_id);
+        $receiver->notify(new SwapRequestNotification($swap));
 
         return redirect()->route('swaps.index')->with('success', 'Swap request berhasil dikirim!');
     }
@@ -76,6 +81,8 @@ class SwapController extends Controller
             'status' => 'accepted',
             'swapped_at' => now(),
         ]);
+
+        $swap->sender->notify(new SwapAcceptedNotification($swap));
 
         return back()->with('success', 'Swap request diterima!');
     }

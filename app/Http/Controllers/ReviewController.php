@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Review;
 use App\Models\Swap;
+use App\Models\User;
+use App\Notifications\ReviewReceivedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,13 +66,16 @@ class ReviewController extends Controller
             return back()->with('error', 'Anda sudah memberikan review!');
         }
 
-        Review::create([
+        $review = Review::create([
             'swap_id' => $request->swap_id,
             'reviewer_id' => Auth::id(),
             'reviewee_id' => $request->reviewee_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);
+
+        $reviewee = User::find($request->reviewee_id);
+        $reviewee->notify(new ReviewReceivedNotification($review));
 
         return redirect()->route('swaps.index')->with('success', 'Review berhasil dikirim!');
     }

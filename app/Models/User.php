@@ -70,4 +70,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class, 'reviewee_id');
     }
+
+    public function getAverageRating()
+    {
+        return $this->reviewsReceived()->avg('rating') ?? 0;
+    }
+
+    public function getTotalSwaps()
+    {
+        return $this->sentSwaps()->where('status', 'accepted')->count() + 
+               $this->receivedSwaps()->where('status', 'accepted')->count();
+    }
 }

@@ -16,10 +16,21 @@
                 <nav class="flex items-center space-x-4">
                     <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-gray-900">Dashboard</a>
                     <a href="{{ route('swaps.index') }}" class="text-gray-700 hover:text-gray-900">My Swaps</a>
-                    <a href="{{ route('profile.edit') }}" class="text-gray-700 hover:text-gray-900">Profil Saya</a>
+                    
+                    <!-- Notification Bell -->
+                    <a href="{{ route('notifications.index') }}" class="relative text-gray-700 hover:text-gray-900">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.001 6.001 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        @if($unreadNotifications > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ $unreadNotifications }}</span>
+                        @endif
+                    </a>
+                    
+                    <a href="{{ route('profile.show') }}" class="text-gray-700 hover:text-gray-900">Profil Saya</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="text-gray-700 hover:text-gray-900">Logout</button>
+                        <button type="submit" class="text-gray-700 hover:text-gray-900" onclick="return confirm('Yakin ingin keluar?')">Logout</button>
                     </form>
                 </nav>
             </div>
@@ -41,7 +52,41 @@
                     </div>
                     <h2 class="mt-4 text-3xl font-bold text-gray-900">{{ $user->name }}</h2>
                     <p class="text-gray-600">{{ $user->email }}</p>
-                </div>
+
+                    <!-- Rating & Stats -->
+                    <div class="mt-4 flex items-center space-x-6 text-sm">
+                        @if($user->reviewsReceived->count() > 0)
+                            @php
+                                $avgRating = round($user->getAverageRating(), 1);
+                                $fullStars = floor($avgRating);
+                                $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
+                            @endphp
+                            <div class="flex items-center space-x-1">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $fullStars)
+                                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    @else
+                                        <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    @endif
+                                @endfor
+                                <span class="ml-2 font-semibold text-gray-700">{{ $avgRating }}</span>
+                            </div>
+                            <span class="text-gray-500">({{ $user->reviewsReceived->count() }} review)</span>
+                        @else
+                            <span class="text-gray-500">Belum ada rating</span>
+                        @endif
+
+                        <div class="hidden md:flex items-center space-x-6 ml-4">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-blue-600">{{ $user->getTotalSwaps() }}</p>
+                                <p class="text-xs text-gray-500">Swaps</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-green-600">{{ $user->offeredSkills->count() + $user->soughtSkills->count() }}</p>
+                                <p class="text-xs text-gray-500">Skills</p>
+                            </div>
+                        </div>
+                    </div>
 
                 <div class="grid md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-gray-50 rounded-lg p-4">

@@ -12,6 +12,15 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function show(Request $request): View
+    {
+        $user = $request->user()->load(['offeredSkills', 'soughtSkills', 'reviewsReceived']);
+        
+        return view('profile.show', [
+            'user' => $user,
+        ]);
+    }
+
     public function edit(Request $request): View
     {
         $user = $request->user()->load(['offeredSkills', 'soughtSkills']);
