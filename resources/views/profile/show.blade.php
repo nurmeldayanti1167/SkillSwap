@@ -97,7 +97,7 @@
         <p class="text-gray-900 font-medium">{{ $user->whatsapp_number }}</p>
     </div>
 @else
-    <p class="text-gray-500 text-sm italic">Belum diisi</p>
+    <p class="text-gray-500 text-sm italic">Nomor kontak akan ditampilkan setelah swap disetujui.</p>
 @endif
                         </div>
                     </div>

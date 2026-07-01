@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserSkillController;
 use App\Http\Controllers\SwapController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,6 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::post('/profile/skills', [UserSkillController::class, 'store'])->name('profile.skills.store');
     Route::delete('/profile/skills/{id}', [UserSkillController::class, 'destroy'])->name('profile.skills.destroy');
+    
+    // Temporary route to make current user admin (remove after use)
+    Route::get('/make-me-admin', function () {
+        auth()->user()->update(['role' => 'admin']);
+        return redirect()->route('dashboard')->with('success', 'You are now an admin.');
+    });
     
     // Swap routes
     Route::get('/swaps', [SwapController::class, 'index'])->name('swaps.index');
@@ -45,3 +51,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Admin routes (protected by admin middleware)
+Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+});

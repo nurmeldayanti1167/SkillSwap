@@ -105,17 +105,10 @@
                         @endif
                     </div>
 
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Kontak</h3>
-@if (
-    auth()->user()->sentSwaps()->where('receiver_id', $user->id)->where('status', 'accepted')->exists()
-    || auth()->user()->receivedSwaps()->where('sender_id', $user->id)->where('status', 'accepted')->exists()
-)
-    <div class="mb-2">
-        <span class="text-gray-600 text-sm">WhatsApp:</span>
-        <p class="text-gray-900 font-medium">{{ $user->whatsapp_number }}</p>
-    </div>
-@endif
+<div class="bg-gray-50 rounded-lg p-4">
+    <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Kontak</h3>
+    <p class="text-gray-500 text-sm italic">Nomor kontak akan ditampilkan setelah swap disetujui.</p>
+</div>
                     </div>
                 </div>
 
