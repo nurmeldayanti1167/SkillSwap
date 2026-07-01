@@ -63,14 +63,14 @@
                                             @csrf
                                             <button type="submit" class="text-xs text-red-600 hover:text-red-800" onclick="return confirm('Yakin ingin membatalkan request ini?')">Batalkan</button>
                                         </form>
-                                    @elseif ($swap->status === 'accepted')
-                                        @if (! $swap->reviews->where('reviewer_id', Auth::id())->count())
-                                            <a href="{{ route('reviews.create', $swap->id) }}" class="text-xs text-blue-600 hover:text-blue-800">Beri Review</a>
-                                        @endif
-                                        <form method="POST" action="{{ route('swaps.complete', $swap->id) }}" class="inline ml-2">
-                                            @csrf
-                                            <button type="submit" class="text-xs text-emerald-600 hover:text-emerald-800" onclick="return confirm('Yakin ingin menandai swap ini selesai?')">Selesai</button>
-                                        </form>
+@elseif ($swap->status === 'accepted')
+                                         @if (! $swap->reviews->where('reviewer_id', Auth::id())->count())
+                                             <a href="{{ route('reviews.create', $swap->id) }}" class="text-xs text-blue-600 hover:text-blue-800">Beri Review</a>
+                                         @endif
+                                         <a href="https://wa.me/{{ $swap->receiver->whatsapp_number ?? $swap->sender->whatsapp_number }}" target="_blank" class="ml-2 text-xs text-green-600 underline" >Hubungi via """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+                                         <form method="POST" action="{{ route('swaps.complete', $swap->id) }}" class="inline ml-2">
+                                             @csrf
+                                             """""""""""""""""""""",""" """"""""""""""""""""""""""""""""",""
                                     @elseif ($swap->status === 'completed')
                                         <span class="text-xs text-emerald-600">✓ Selesai</span>
                                         @if (! $swap->reviews->where('reviewer_id', Auth::id())->count())
@@ -138,12 +138,13 @@
                                             @csrf
                                             <button type="submit" class="px-3 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700">Selesai</button>
                                         </form>
-                                    @elseif ($swap->status === 'completed')
-                                        <span class="text-xs text-emerald-600">✓ Selesai</span>
-                                        @if (! $swap->reviews->where('reviewer_id', Auth::id())->count())
-                                            <a href="{{ route('reviews.create', $swap->id) }}" class="text-xs text-blue-600 hover:text-blue-800 ml-2">Beri Review</a>
-                                        @endif
-                                </div>
+@elseif ($swap->status === 'completed')
+                                         <span class="text-xs text-emerald-600">✓ Selesai</span>
+                                         @if (! $swap->reviews->where('reviewer_id', Auth::id())->count())
+                                             <a href="{{ route('reviews.create', $swap->id) }}" class="text-xs text-blue-600 hover:text-blue-800 ml-2">Beri Review</a>
+                                         @endif
+                                     @endif
+                                 </div>
                             </div>
                         @endforeach
                     </div>
